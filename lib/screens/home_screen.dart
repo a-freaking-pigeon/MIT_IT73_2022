@@ -17,11 +17,13 @@ class HomeScreen extends StatelessWidget {
       title: 'Knjiga iz MIT-a',
       description: 'Odlično stanje, korišćena jednu godinu',
       price: 1500,
+      imageUrl: 'https://picsum.photos/200/200?1',
     ),
     Item(
       title: 'Polovni laptop',
       description: 'i5 procesor, 8GB RAM, SSD',
       price: 45000,
+      imageUrl: 'https://picsum.photos/200/200?2',
     ),
   ];
 

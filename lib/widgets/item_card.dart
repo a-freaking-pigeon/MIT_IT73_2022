@@ -17,6 +17,15 @@ class ItemCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
       ),
       child: ListTile(
+        leading: ClipRRect(
+          borderRadius: BorderRadius.circular(8),
+          child: Image.network(
+            item.imageUrl,
+            width: 56,
+            height: 56,
+            fit: BoxFit.cover,
+          ),
+        ),
         title: Text(item.title),
         subtitle: Text(item.description),
         trailing: Text('${item.price} RSD'),

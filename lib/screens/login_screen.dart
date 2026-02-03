@@ -12,100 +12,104 @@ class LoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.primary,
       appBar: AppBar(
         title: const Text('Prijava'),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
         centerTitle: true,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text(
-              'Dobrodošli',
-              style: TextStyle(
-                fontSize: 26,
-                fontWeight: FontWeight.bold,
-              ),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
             ),
-            const SizedBox(height: 32),
-
-            const CustomInput(
-              label: 'Email',
-            ),
-            const SizedBox(height: 16),
-
-            const CustomInput(
-              label: 'Lozinka',
-              isPassword: true,
-            ),
-            const SizedBox(height: 24),
-
-            CustomButton(
-              text: 'Prijava',
-              onPressed: () {          
-                AuthService.loginAsUser();
-
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const HomeScreen(),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  'Dobrodošli',
+                  style: TextStyle(
+                    fontSize: 26,
+                    fontWeight: FontWeight.bold,
                   ),
-                );
-              },
-            ),
+                ),
+                const SizedBox(height: 24),
 
-            const SizedBox(height: 16),
+                const CustomInput(label: 'Mejl'),
+                const SizedBox(height: 16),
 
-            TextButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const RegisterScreen(),
+                const CustomInput(
+                  label: 'Lozinka',
+                  isPassword: true,
+                ),
+                const SizedBox(height: 24),
+
+                CustomButton(
+                  text: 'Prijavi se',
+                  onPressed: () {
+                    AuthService.loginAsUser();
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const HomeScreen(),
+                      ),
+                    );
+                  },
+                ),
+
+                const SizedBox(height: 12),
+
+                TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const RegisterScreen(),
+                      ),
+                    );
+                  },
+                  child: const Text("Nemate nalog? Registrujte se"),
+                ),
+
+                TextButton(
+                  onPressed: () {
+                    AuthService.currentRole = UserRole.guest;
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const HomeScreen(),
+                      ),
+                    );
+                  },
+                  child: const Text('Nastavite kao gost'),
+                ),
+
+                TextButton(
+                  onPressed: () {
+                    AuthService.loginAsAdmin();
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const HomeScreen(),
+                      ),
+                    );
+                  },
+                  child: const Text(
+                    'Admin',
+                    style: TextStyle(color: Colors.red),
                   ),
-                );
-              },
-              child: const Text(
-                "Nemate nalog? Registrujte se ovde",
-              ),
+                ),
+              ],
             ),
-
-            TextButton(
-              onPressed: () {
-                AuthService.currentRole = UserRole.guest;
-
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => const HomeScreen(),
-                  ),
-                );
-              },
-              child: const Text(
-                'Nastavi kao gost',
-              ),
-            ),
-
-            TextButton(
-              onPressed: () {
-                AuthService.loginAsAdmin();
-
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => const HomeScreen(),
-                  ),
-                );
-              },
-              child: const Text(
-                'Admin',
-                style: TextStyle(color: Colors.red),
-              ),
-            ),
-          ],
+          ),
         ),
       ),
+
     );
   }
 }
