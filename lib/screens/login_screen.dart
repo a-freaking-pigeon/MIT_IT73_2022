@@ -1,13 +1,27 @@
+import 'package:devecerski_it73_2022/screens/register_screen.dart';
 import 'package:flutter/material.dart';
 import '../widgets/custom_input.dart';
 import '../widgets/custom_button.dart';
-import 'register_screen.dart';
 import 'home_screen.dart';
 import '../services/auth_service.dart';
 
-
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
+
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+
+  @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,25 +54,43 @@ class LoginScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 24),
 
-                const CustomInput(label: 'Mejl'),
+                CustomInput(
+                  label: 'Mejl',
+                  controller: emailController,
+                ),
                 const SizedBox(height: 16),
 
-                const CustomInput(
+                CustomInput(
                   label: 'Lozinka',
                   isPassword: true,
+                  controller: passwordController,
                 ),
                 const SizedBox(height: 24),
 
                 CustomButton(
                   text: 'Prijavi se',
-                  onPressed: () {
-                    AuthService.loginAsUser();
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const HomeScreen(),
-                      ),
-                    );
+                  onPressed: () async {
+                    try {
+                      await AuthService.login(
+                        emailController.text.trim(),
+                        passwordController.text.trim(),
+                      );
+
+                      if (!context.mounted) return;
+
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const HomeScreen(),
+                        ),
+                      );
+                    } catch (e) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Prijava nije uspela'),
+                        ),
+                      );
+                    }
                   },
                 ),
 
@@ -69,11 +101,12 @@ class LoginScreen extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => const RegisterScreen(),
+                        builder: (_) => const
+                        RegisterScreen(),
                       ),
                     );
                   },
-                  child: const Text("Nemate nalog? Registrujte se"),
+                  child: const Text('Nemate nalog? Registrujte se'),
                 ),
 
                 TextButton(
@@ -88,28 +121,11 @@ class LoginScreen extends StatelessWidget {
                   },
                   child: const Text('Nastavite kao gost'),
                 ),
-
-                TextButton(
-                  onPressed: () {
-                    AuthService.loginAsAdmin();
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const HomeScreen(),
-                      ),
-                    );
-                  },
-                  child: const Text(
-                    'Admin',
-                    style: TextStyle(color: Colors.red),
-                  ),
-                ),
               ],
             ),
           ),
         ),
       ),
-
     );
   }
 }
