@@ -15,24 +15,25 @@ class Item {
     required this.ownerId,
   });
 
-  factory Item.fromFirestore(String id, Map<String, dynamic> data) {
+  factory Item.fromFirestore(Map<String, dynamic> data, String id) {
     return Item(
       id: id,
-      title: data['title'],
-      description: data['description'],
-      price: (data['price'] as num).toDouble(),
-      imageUrl: data['imageUrl'],
-      ownerId: data['ownerId'],
+      title: data['title'] ?? '',
+      description: data['description'] ?? '',
+      price: (data['price'] ?? 0).toDouble(),
+      imageUrl: data['imageUrl'] ?? '',
+      ownerId: data['ownerId'] ?? '',
     );
   }
 
-  Map<String, dynamic> toFirestore() {
+  Map<String, dynamic> toMap() {
     return {
       'title': title,
       'description': description,
       'price': price,
       'imageUrl': imageUrl,
       'ownerId': ownerId,
+      'createdAt': DateTime.now(),
     };
   }
 }

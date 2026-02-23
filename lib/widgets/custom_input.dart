@@ -4,12 +4,14 @@ class CustomInput extends StatelessWidget {
   final String label;
   final bool isPassword;
   final TextEditingController controller;
+  final bool enabled;
 
   const CustomInput({
     super.key,
     required this.label,
     this.isPassword = false,
-    required this.controller,
+    required this.controller, 
+    this.enabled = true,
   });
 
   @override
@@ -17,6 +19,7 @@ class CustomInput extends StatelessWidget {
     return TextField(
       controller: controller,
       obscureText: isPassword,
+      enabled: enabled,
       decoration: InputDecoration(
         labelText: label,
         border: const OutlineInputBorder(),
