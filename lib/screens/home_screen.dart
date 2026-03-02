@@ -8,9 +8,23 @@ import '../services/item_service.dart';
 import 'add_edit_screen.dart';
 import 'admin_screen.dart';
 import 'login_screen.dart';
+import '../services/currency_service.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  late Future<double> exchangeRate;
+
+  @override
+  void initState() {
+    super.initState();
+    exchangeRate = CurrencyService.getRsdToEurRate();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,13 +44,11 @@ class HomeScreen extends StatelessWidget {
                 );
               },
             ),
-
           if (AuthService.currentRole != UserRole.guest)
             IconButton(
               icon: const Icon(Icons.logout),
               onPressed: () async {
                 await AuthService.logout();
-
                 if (!context.mounted) return;
 
                 Navigator.pushAndRemoveUntil(
@@ -50,7 +62,6 @@ class HomeScreen extends StatelessWidget {
             ),
         ],
       ),
-
       floatingActionButton:
           AuthService.currentRole == UserRole.guest
               ? null
@@ -65,44 +76,59 @@ class HomeScreen extends StatelessWidget {
                   },
                   child: const Icon(Icons.add),
                 ),
-
-      body: StreamBuilder<List<Item>>(
-        stream: ItemService.getItems(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
+      body: FutureBuilder<double>(
+        future: exchangeRate,
+        builder: (context, rateSnapshot) {
+          if (rateSnapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
           }
 
-          if (snapshot.hasError) {
-            return const Center(
-              child: Text('Greška pri učitavanju oglasa'),
-            );
+          if (rateSnapshot.hasError) {
+            // fallback kurs ako API pukne
+            return _buildContent(0.0085);
           }
 
-          if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(
-              child: Text(
-                'Nema dostupnih oglasa',
-                style: TextStyle(fontSize: 16),
-              ),
-            );
-          }
+          final rate = rateSnapshot.data ?? 0.0085;
 
-          final items = snapshot.data!;
-
-          return ListView.builder(
-            padding: const EdgeInsets.all(12),
-            itemCount: items.length,
-            itemBuilder: (context, index) {
-              return ItemCard(
-                item: items[index],
-              );
-            },
-          );
+          return _buildContent(rate);
         },
       ),
     );
   }
+
+  Widget _buildContent(double rate) {
+  return StreamBuilder<List<Item>>(
+    stream: ItemService.getItems(),
+    builder: (context, snapshot) {
+      if (snapshot.connectionState == ConnectionState.waiting) {
+        return const Center(child: CircularProgressIndicator());
+      }
+
+      if (snapshot.hasError) {
+        return const Center(
+          child: Text('Greška pri učitavanju oglasa'),
+        );
+      }
+
+      if (!snapshot.hasData || snapshot.data!.isEmpty) {
+        return const Center(
+          child: Text('Nema dostupnih oglasa'),
+        );
+      }
+
+      final items = snapshot.data!;
+
+      return ListView.builder(
+        padding: const EdgeInsets.all(12),
+        itemCount: items.length,
+        itemBuilder: (context, index) {
+          return ItemCard(
+            item: items[index],
+            exchangeRate: rate,
+          );
+        },
+      );
+    },
+  );
+}
 }

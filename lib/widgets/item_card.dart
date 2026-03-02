@@ -6,8 +6,9 @@ import '../screens/add_edit_screen.dart';
 
 class ItemCard extends StatelessWidget {
   final Item item;
+  final double exchangeRate;
 
-  const ItemCard({super.key, required this.item});
+  const ItemCard({super.key, required this.item, required this.exchangeRate});
 
   bool _canDelete() {
     if (AuthService.currentRole == UserRole.admin) return true;
@@ -99,9 +100,18 @@ class ItemCard extends StatelessWidget {
               const SizedBox(height: 4),
               Text(item.description),
               const SizedBox(height: 6),
-              Text(
-                '${item.price} RSD',
-                style: const TextStyle(fontWeight: FontWeight.w600),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '${item.price} RSD',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  Text(
+                    '${(item.price * exchangeRate).toStringAsFixed(2)} EUR',
+                    style: const TextStyle(color: Colors.grey),
+                  ),
+                ],
               ),
             ],
           ),
